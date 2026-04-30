@@ -50,18 +50,17 @@ const modulesWithHeadings = await Promise.all(
 
 <script>
   /**
-   * ROBUST ACTIVE TOPIC HIGHLIGHTER
+   * PRECISION ACTIVE TOPIC HIGHLIGHTER
    */
   function initSidebarHighlight() {
     const currentPath = window.location.pathname;
     const sidebar = document.querySelector('.sidebar');
     if (!sidebar) return;
 
-    // Helper to normalize paths for comparison
     const normalize = (path) => path.replace(/\/$/, "");
     const normalizedCurrent = normalize(currentPath);
 
-    // 1. Highlight Active Module
+    // 1. Highlight Active Module Link
     const moduleLinks = document.querySelectorAll('.nav-link');
     moduleLinks.forEach(link => {
       const href = link.getAttribute('href');
@@ -75,46 +74,53 @@ const modulesWithHeadings = await Promise.all(
       }
     });
 
-    // 2. Highlight Active Topic based on Scroll
+    // 2. Precision ScrollSpy for Topics
     const topics = Array.from(document.querySelectorAll('.prose h2[id]'));
     const topicLinks = document.querySelectorAll('.topic-link');
 
     if (topics.length === 0) return;
 
+    // Use a map for O(1) link lookup
+    const idToLink = new Map();
+    topicLinks.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && href.includes('#')) {
+        const id = href.split('#')[1];
+        idToLink.set(id, link);
+      }
+    });
+
     const observerOptions = {
       root: null,
-      rootMargin: '-100px 0px -60% 0px',
-      threshold: [0, 1]
+      rootMargin: '-10% 0px -80% 0px', // Narrow strip at top-middle
+      threshold: 0
     };
 
-    let activeId = "";
-
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          activeId = entry.target.id;
-          updateHighlight();
-        }
-      });
-    }, observerOptions);
+      // Sort entries by top position to handle simultaneous intersections
+      const sortedEntries = entries
+        .filter(e => e.isIntersecting)
+        .sort((a, b) => a.target.getBoundingClientRect().top - b.target.getBoundingClientRect().top);
 
-    function updateHighlight() {
-      if (!activeId) return;
-      topicLinks.forEach(link => {
-        const href = link.getAttribute('href');
-        if (href && href.includes(`#${activeId}`)) {
-          link.classList.add('active-topic');
-          // Optional: sidebar.scrollTo(...) if needed
-        } else {
-          link.classList.remove('active-topic');
+      if (sortedEntries.length > 0) {
+        // The one closest to our top margin wins
+        const activeId = sortedEntries[0].target.id;
+        
+        // Update visual states
+        topicLinks.forEach(l => l.classList.remove('active-topic'));
+        const activeLink = idToLink.get(activeId);
+        if (activeLink) {
+          activeLink.classList.add('active-topic');
         }
-      });
-    }
+      }
+    }, observerOptions);
 
     topics.forEach(t => observer.observe(t));
   }
 
+  // Double-trigger for Astro's static generation and potential hydrations
   initSidebarHighlight();
+  window.addEventListener('load', initSidebarHighlight);
   document.addEventListener('astro:after-swap', initSidebarHighlight);
 </script>
 

@@ -60,12 +60,19 @@ const isContentsPage = currentPath.endsWith('/contents');
       // Find which topic is currently in view
       let currentTopicIndex = -1;
       
-      // We look for the first topic that is near the top of the viewport
       for (let i = 0; i < topics.length; i++) {
         const rect = topics[i].getBoundingClientRect();
-        if (rect.top <= 150) { // Threshold for being "at the top"
+        if (rect.top <= 150) {
           currentTopicIndex = i;
         }
+      }
+
+      const activeTopicId = currentTopicIndex !== -1 ? topicIds[currentTopicIndex] : "";
+      const indexBtn = document.querySelector('.index-btn') as HTMLAnchorElement;
+
+      // Update INDEX Button with current hash
+      if (indexBtn && activeTopicId) {
+        indexBtn.href = `${import.meta.env.BASE_URL}/contents#${activeTopicId}`;
       }
 
       // 1. Update NEXT Button
