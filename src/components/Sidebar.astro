@@ -25,8 +25,8 @@ const modulesWithHeadings = await Promise.all(
     <div class="section-title">DIRECTORY: /MODULES</div>
     <ul>
       {modulesWithHeadings.map(module => (
-        <li class="module-item">
-          <a href={`${import.meta.env.BASE_URL}/modules/${module.id}`} class="nav-link">
+        <li class={`module-item ${module.id}`}>
+          <a href={`${import.meta.env.BASE_URL}/modules/${module.id}`} class="nav-link" data-module-id={module.id}>
             <span class="icon">></span>
             <span class="label">{module.data.title}</span>
           </a>
@@ -34,7 +34,7 @@ const modulesWithHeadings = await Promise.all(
             <ul class="topic-list">
               {module.topics.map(topic => (
                 <li>
-                  <a href={`${import.meta.env.BASE_URL}/modules/${module.id}#${topic.slug}`} class="topic-link">
+                  <a href={`${import.meta.env.BASE_URL}/modules/${module.id}#${topic.slug}`} class="topic-link" data-topic-id={topic.slug}>
                     <span class="topic-icon">-</span>
                     <span class="topic-label">{topic.text}</span>
                   </a>
@@ -48,7 +48,77 @@ const modulesWithHeadings = await Promise.all(
   </nav>
 </aside>
 
+<script>
+  /**
+   * ACTIVE TOPIC HIGHLIGHTER
+   */
+  function initSidebarHighlight() {
+    const currentPath = window.location.pathname;
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar) return;
+
+    // 1. Highlight Active Module based on URL
+    const moduleLinks = document.querySelectorAll('.nav-link');
+    moduleLinks.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && currentPath.includes(href)) {
+        link.classList.add('active-module');
+      } else {
+        link.classList.remove('active-module');
+      }
+    });
+
+    // 2. Highlight Active Topic based on Scroll
+    const topics = Array.from(document.querySelectorAll('.prose h2[id]'));
+    const topicLinks = document.querySelectorAll('.topic-link');
+
+    if (topics.length === 0) return;
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '-10% 0px -70% 0px', // Trigger when topic is in top 30% of screen
+      threshold: 0
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          topicLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && href.endsWith(`#${id}`)) {
+              link.classList.add('active-topic');
+              // Ensure sidebar scrolls to keep active link visible
+              link.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+              link.classList.remove('active-topic');
+            }
+          });
+        }
+      });
+    }, observerOptions);
+
+    topics.forEach(t => observer.observe(t));
+  }
+
+  initSidebarHighlight();
+  document.addEventListener('astro:after-swap', initSidebarHighlight);
+</script>
+
 <style>
+  /* ... existing styles ... */
+  .active-module {
+    background-color: rgba(255, 191, 0, 0.1);
+    color: var(--accent-amber) !important;
+    border-left: 2px solid var(--accent-amber);
+  }
+
+  .active-topic {
+    color: var(--accent-green) !important;
+    background-color: rgba(0, 255, 65, 0.08);
+    font-weight: bold;
+  }
+
   .sidebar {
     width: 280px;
     height: 100vh;
