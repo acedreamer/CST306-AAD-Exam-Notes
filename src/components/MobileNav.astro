@@ -67,12 +67,14 @@ const isContentsPage = currentPath.endsWith('/contents');
         }
       }
 
-      const activeTopicId = currentTopicIndex !== -1 ? topicIds[currentTopicIndex] : "";
+      // Default to first topic if we haven't scrolled yet
+      const activeTopicId = currentTopicIndex !== -1 ? topicIds[currentTopicIndex] : topicIds[0];
       const indexBtn = document.querySelector('.index-btn') as HTMLAnchorElement;
+      const normalizedBase = (import.meta.env.BASE_URL || "").replace(/\/$/, "");
 
-      // Update INDEX Button with current hash
+      // Update INDEX Button with current hash (avoiding double slashes)
       if (indexBtn && activeTopicId) {
-        indexBtn.href = `${import.meta.env.BASE_URL}/contents#${activeTopicId}`;
+        indexBtn.href = `${normalizedBase}/contents#${activeTopicId}`;
       }
 
       // 1. Update NEXT Button
