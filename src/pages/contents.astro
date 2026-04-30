@@ -1,0 +1,145 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const allModules = await getCollection('modules');
+const sortedModules = allModules.sort((a, b) => a.data.order - b.data.order);
+
+// Pre-render all modules to get headings
+const modulesWithTopics = await Promise.all(
+  sortedModules.map(async (module) => {
+    const rendered = await render(module);
+    return {
+      ...module,
+      topics: rendered.headings.filter((h) => h.depth === 2),
+    };
+  })
+);
+---
+
+<BaseLayout title="Contents">
+  <div class="contents-container">
+    <div class="header-box">
+      <span class="label">SYSTEM_INDEX</span>
+      <h1>DIRECTORY / ALL_TOPICS</h1>
+    </div>
+
+    <div class="directory-tree">
+      {modulesWithTopics.map(module => (
+        <div class="module-group">
+          <div class="module-line">
+            <span class="icon">></span>
+            <a href={`${import.meta.env.BASE_URL}/modules/${module.id}`} class="module-title">
+              M{module.data.moduleNumber}: {module.data.title}
+            </a>
+          </div>
+          <ul class="topic-sublist">
+            {module.topics.map(topic => (
+              <li>
+                <span class="dash">-</span>
+                <a href={`${import.meta.env.BASE_URL}/modules/${module.id}#${topic.slug}`} class="topic-link">
+                  {topic.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .contents-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding-top: 1rem;
+  }
+
+  .header-box {
+    border-bottom: var(--border-sharp);
+    padding-bottom: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .header-box .label {
+    font-family: var(--font-mono);
+    color: var(--accent-amber);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+  }
+
+  .header-box h1 {
+    font-family: var(--font-mono);
+    font-size: 1.8rem;
+    color: var(--accent-green);
+    margin: 0.5rem 0 0 0;
+  }
+
+  .directory-tree {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .module-line {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .module-line .icon {
+    color: var(--accent-green);
+    font-weight: bold;
+    margin-right: 1rem;
+    font-family: var(--font-mono);
+  }
+
+  .module-title {
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+
+  .topic-sublist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-left: 1px dashed var(--border-color);
+    margin-left: 0.4rem;
+    padding-left: 1.5rem;
+  }
+
+  .topic-sublist li {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+  }
+
+  .topic-sublist .dash {
+    color: var(--text-muted);
+    margin-right: 0.75rem;
+    font-family: var(--font-mono);
+  }
+
+  .topic-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+    line-height: 1.4;
+  }
+
+  .topic-link:hover, .topic-link:active {
+    color: var(--accent-amber);
+  }
+
+  @media (max-width: 768px) {
+    .header-box h1 {
+      font-size: 1.4rem;
+    }
+  }
+</style>
