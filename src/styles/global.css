@@ -38,11 +38,32 @@ body {
 
 /* 4-Pillar Study Method Styles */
 .prose {
-  max-width: 800px;
+  max-width: 1100px;
   margin: 0 auto;
   color: var(--text-primary);
   font-size: 1.1rem;
   line-height: 1.7;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-deep);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-light);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-green);
+}
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-light) var(--bg-deep);
 }
 
 .prose h1, .prose h2, .prose h3 {
