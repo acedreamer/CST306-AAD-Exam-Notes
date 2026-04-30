@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Home">
+  <div class="hero">
+    <h1 class="glitch" data-text="ALGORITHM_STUDY_OS">ALGORITHM_STUDY_OS</h1>
+    <p class="subtitle">PREPARING_FOR_EXAMINATION_SESSION: [2026-04-30]</p>
+    
+    <div class="status-box">
+      <div class="status-item">
+        <span class="label">SYSTEM_STATUS:</span>
+        <span class="value">READY</span>
+      </div>
+      <div class="status-item">
+        <span class="label">MODULES_LOADED:</span>
+        <span class="value">5</span>
+      </div>
+    </div>
+
+    <div class="welcome-message">
+      <p>Welcome to the Algorithm Study Operating System. Use the sidebar to explore learning modules or navigate using the controls below on mobile devices.</p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+  }
+
+  .glitch {
+    font-family: var(--font-mono);
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--accent-green);
+    margin: 0;
+    position: relative;
+    letter-spacing: -0.05em;
+  }
+
+  .subtitle {
+    font-family: var(--font-mono);
+    color: var(--accent-amber);
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+  }
+
+  .status-box {
+    margin-top: 3rem;
+    border: var(--border-sharp);
+    padding: 1.5rem;
+    background-color: var(--surface);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .status-item .label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  .status-item .value {
+    font-family: var(--font-mono);
+    color: var(--accent-green);
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+
+  .welcome-message {
+    margin-top: 3rem;
+    max-width: 600px;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+  }
+
+  @media (max-width: 768px) {
+    .glitch {
+      font-size: 2rem;
+    }
+    
+    .status-box {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+</style>

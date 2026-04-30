@@ -1,0 +1,152 @@
+---
+import { getCollection, render } from 'astro:content';
+
+const allModules = await getCollection('modules');
+const sortedModules = allModules.sort((a, b) => a.data.order - b.data.order);
+
+// Pre-render all modules to get headings for nested navigation
+const modulesWithHeadings = await Promise.all(
+  sortedModules.map(async (module) => {
+    const rendered = await render(module);
+    const headings = rendered.headings;
+    return {
+      ...module,
+      topics: headings.filter((h) => h.depth === 2),
+    };
+  })
+);
+---
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <span class="brand">ALGO_OS v1.0</span>
+  </div>
+  <nav class="file-explorer">
+    <div class="section-title">DIRECTORY: /MODULES</div>
+    <ul>
+      {modulesWithHeadings.map(module => (
+        <li class="module-item">
+          <a href={`/modules/${module.id}`} class="nav-link">
+            <span class="icon">></span>
+            <span class="label">{module.data.title}</span>
+          </a>
+          {module.topics.length > 0 && (
+            <ul class="topic-list">
+              {module.topics.map(topic => (
+                <li>
+                  <a href={`/modules/${module.id}#${topic.slug}`} class="topic-link">
+                    <span class="topic-icon">-</span>
+                    <span class="topic-label">{topic.text}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
+  </nav>
+</aside>
+
+<style>
+  .sidebar {
+    width: 280px;
+    height: 100vh;
+    background-color: var(--surface);
+    border-right: var(--border-sharp);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+  }
+
+  .sidebar-header {
+    padding: 1.5rem;
+    border-bottom: var(--border-sharp);
+    background-color: var(--bg-deep);
+  }
+
+  .brand {
+    font-family: var(--font-mono);
+    color: var(--accent-green);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  .file-explorer {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem 0;
+  }
+
+  .section-title {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    padding: 0 1.5rem 0.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .file-explorer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .nav-link:hover {
+    background-color: var(--bg-deep);
+    color: var(--accent-amber);
+    padding-left: 1.75rem;
+  }
+
+  .icon {
+    margin-right: 0.75rem;
+    color: var(--accent-green);
+    font-weight: bold;
+  }
+
+  .topic-list {
+    padding-bottom: 0.5rem;
+  }
+
+  .topic-link {
+    display: flex;
+    align-items: center;
+    padding: 0.4rem 1.5rem 0.4rem 2.75rem;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+  }
+
+  .topic-link:hover {
+    color: var(--accent-green);
+    background-color: rgba(0, 255, 65, 0.05);
+  }
+
+  .topic-icon {
+    margin-right: 0.5rem;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,82 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const modules = await getCollection('modules');
+  return modules.map(entry => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout title={entry.data.title}>
+  <div class="module-header">
+    <div class="breadcrumb">MODULES / {entry.id.toUpperCase()}</div>
+    <h1>{entry.data.title}</h1>
+    <div class="metadata">
+      <span class="tag">M{entry.data.moduleNumber}</span>
+      <span class="tag">ORDER: {entry.data.order}</span>
+    </div>
+  </div>
+
+  <article class="prose">
+    <Content />
+  </article>
+</BaseLayout>
+
+<style>
+  .module-header {
+    margin-bottom: 3rem;
+    border-bottom: var(--border-sharp);
+    padding-bottom: 2rem;
+  }
+
+  .breadcrumb {
+    font-family: var(--font-mono);
+    color: var(--accent-amber);
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  h1 {
+    font-family: var(--font-mono);
+    font-size: 2.5rem;
+    margin: 0;
+    color: var(--accent-green);
+  }
+
+  .metadata {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    background: var(--surface-light);
+    border: var(--border-sharp);
+    color: var(--text-muted);
+  }
+
+  .prose {
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 1.8rem;
+    }
+    
+    .module-header {
+      margin-bottom: 2rem;
+    }
+  }
+</style>

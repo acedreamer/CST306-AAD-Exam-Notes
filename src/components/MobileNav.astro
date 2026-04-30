@@ -1,0 +1,121 @@
+---
+import { getCollection } from 'astro:content';
+
+const allModules = await getCollection('modules');
+const sortedModules = allModules.sort((a, b) => a.data.order - b.data.order);
+
+const currentPath = Astro.url.pathname;
+// Handle trailing slash if present
+const normalizedPath = currentPath.endsWith('/') && currentPath.length > 1 ? currentPath.slice(0, -1) : currentPath;
+
+const currentIndex = sortedModules.findIndex(m => {
+  const modulePath = `/modules/${m.id}`;
+  return modulePath === normalizedPath;
+});
+
+const prevModule = currentIndex > 0 ? sortedModules[currentIndex - 1] : null;
+const nextModule = currentIndex < sortedModules.length - 1 && currentIndex !== -1 ? sortedModules[currentIndex + 1] : null;
+---
+
+<nav class="mobile-nav">
+  <div class="nav-container">
+    {prevModule ? (
+      <a href={`/modules/${prevModule.id}`} class="nav-btn">
+        <span class="btn-text">[PREV]</span>
+      </a>
+    ) : (
+      <div class="nav-btn disabled">
+        <span class="btn-text">[PREV]</span>
+      </div>
+    )}
+    
+    <a href="/" class="nav-btn index-btn">
+      <span class="btn-text">[INDEX]</span>
+    </a>
+
+    {nextModule ? (
+      <a href={`/modules/${nextModule.id}`} class="nav-btn">
+        <span class="btn-text">[NEXT]</span>
+      </a>
+    ) : (
+      <div class="nav-btn disabled">
+        <span class="btn-text">[NEXT]</span>
+      </div>
+    )}
+  </div>
+</nav>
+
+<style>
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-deep);
+    border-top: 2px solid var(--accent-green);
+    z-index: 1000;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .nav-btn {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.85rem;
+    text-decoration: none;
+    color: var(--accent-green);
+    font-family: var(--font-mono);
+    font-weight: bold;
+    font-size: 0.85rem;
+    border: 1px solid var(--accent-green);
+    margin: 0 0.35rem;
+    background-color: var(--surface);
+    transition: all 0.1s ease;
+    text-transform: uppercase;
+    box-shadow: 2px 2px 0px var(--accent-green);
+  }
+
+  .nav-btn:active:not(.disabled) {
+    background-color: var(--accent-green);
+    color: var(--bg-deep);
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px var(--accent-green);
+  }
+
+  .nav-btn.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+    box-shadow: none;
+  }
+
+  .index-btn {
+    border-width: 2px;
+    background-color: var(--bg-deep);
+    color: var(--accent-amber);
+    border-color: var(--accent-amber);
+    box-shadow: 2px 2px 0px var(--accent-amber);
+  }
+
+  .index-btn:active {
+    box-shadow: 1px 1px 0px var(--accent-amber);
+  }
+
+  @media (max-width: 768px) {
+    .mobile-nav {
+      display: block;
+    }
+  }
+</style>

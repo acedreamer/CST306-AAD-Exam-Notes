@@ -1,0 +1,60 @@
+---
+import '../styles/global.css';
+import Sidebar from '../components/Sidebar.astro';
+import MobileNav from '../components/MobileNav.astro';
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title} | Algorithm Study OS</title>
+    <!-- Add fonts here (Inter and JetBrains Mono from Google Fonts) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div class="crt-overlay"></div>
+    <div class="layout-container">
+      <Sidebar />
+      <main class="main-content">
+        <slot />
+      </main>
+      <MobileNav />
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  .layout-container {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .main-content {
+    flex: 1;
+    width: 100%;
+    transition: margin-left 0.3s ease;
+  }
+
+  @media (min-width: 769px) {
+    .main-content {
+      margin-left: 280px; /* Width of the sidebar */
+      padding: 3rem;
+      max-width: calc(100% - 280px);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .main-content {
+      padding: 1.5rem;
+      padding-bottom: 100px; /* Space for MobileNav */
+    }
+  }
+</style>
