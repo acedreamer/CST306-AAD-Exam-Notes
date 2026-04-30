@@ -52,26 +52,30 @@ const modulesWithTopics = await Promise.all(
 <script>
   function highlightFromHash() {
     const hash = window.location.hash;
-    if (hash) {
-      // Remove previous highlights
-      document.querySelectorAll('.topic-link').forEach(l => l.classList.remove('active-index-item'));
-      
-      // Find the link that ends with this hash
-      const activeLink = document.querySelector(`.topic-link[href$="${hash}"]`);
+    if (!hash) return;
+
+    // Use a slight delay to ensure browser has rendered everything
+    setTimeout(() => {
+      // Clear previous
+      document.querySelectorAll('.active-index-item').forEach(el => el.classList.remove('active-index-item'));
+
+      // Find link ending with #hash
+      const activeLink = document.querySelector(`a[href*="${hash}"]`);
       if (activeLink) {
         activeLink.classList.add('active-index-item');
-        // Smooth scroll to the item
-        setTimeout(() => {
-          activeLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 100);
+        activeLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-    }
+    }, 200);
   }
 
+  // Initial call
   highlightFromHash();
+  
+  // Listeners
   window.addEventListener('hashchange', highlightFromHash);
-  // Ensure it works with Astro transitions
   document.addEventListener('astro:after-swap', highlightFromHash);
+  // Fallback for direct loads
+  window.addEventListener('load', highlightFromHash);
 </script>
 
 <style>
