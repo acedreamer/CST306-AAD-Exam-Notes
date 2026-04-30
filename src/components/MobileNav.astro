@@ -13,8 +13,9 @@ const currentIndex = sortedModules.findIndex(m => {
   return modulePath === normalizedPath;
 });
 
+const isHome = normalizedPath === (import.meta.env.BASE_URL || "/");
 const prevModule = currentIndex > 0 ? sortedModules[currentIndex - 1] : null;
-const nextModule = currentIndex < sortedModules.length - 1 && currentIndex !== -1 ? sortedModules[currentIndex + 1] : null;
+const nextModule = isHome ? sortedModules[0] : (currentIndex < sortedModules.length - 1 && currentIndex !== -1 ? sortedModules[currentIndex + 1] : null);
 ---
 
 <nav class="mobile-nav">
