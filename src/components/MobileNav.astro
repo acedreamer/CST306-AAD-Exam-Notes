@@ -9,7 +9,7 @@ const currentPath = Astro.url.pathname;
 const normalizedPath = currentPath.endsWith('/') && currentPath.length > 1 ? currentPath.slice(0, -1) : currentPath;
 
 const currentIndex = sortedModules.findIndex(m => {
-  const modulePath = `/modules/${m.id}`;
+  const modulePath = `${import.meta.env.BASE_URL}/modules/${m.id}`;
   return modulePath === normalizedPath;
 });
 
@@ -20,7 +20,7 @@ const nextModule = currentIndex < sortedModules.length - 1 && currentIndex !== -
 <nav class="mobile-nav">
   <div class="nav-container">
     {prevModule ? (
-      <a href={`/modules/${prevModule.id}`} class="nav-btn">
+      <a href={`${import.meta.env.BASE_URL}/modules/${prevModule.id}`} class="nav-btn">
         <span class="btn-text">[PREV]</span>
       </a>
     ) : (
@@ -29,12 +29,12 @@ const nextModule = currentIndex < sortedModules.length - 1 && currentIndex !== -
       </div>
     )}
     
-    <a href="/" class="nav-btn index-btn">
+    <a href={import.meta.env.BASE_URL || "/"} class="nav-btn index-btn">
       <span class="btn-text">[INDEX]</span>
     </a>
 
     {nextModule ? (
-      <a href={`/modules/${nextModule.id}`} class="nav-btn">
+      <a href={`${import.meta.env.BASE_URL}/modules/${nextModule.id}`} class="nav-btn">
         <span class="btn-text">[NEXT]</span>
       </a>
     ) : (
