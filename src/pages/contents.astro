@@ -53,25 +53,35 @@ const modulesWithTopics = await Promise.all(
   function highlightFromHash() {
     const hash = window.location.hash;
     if (hash) {
-      const activeLink = document.querySelector(`.topic-link[href*="${hash}"]`);
+      // Remove previous highlights
+      document.querySelectorAll('.topic-link').forEach(l => l.classList.remove('active-index-item'));
+      
+      // Find the link that ends with this hash
+      const activeLink = document.querySelector(`.topic-link[href$="${hash}"]`);
       if (activeLink) {
         activeLink.classList.add('active-index-item');
-        activeLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Smooth scroll to the item
+        setTimeout(() => {
+          activeLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
       }
     }
   }
+
   highlightFromHash();
   window.addEventListener('hashchange', highlightFromHash);
+  // Ensure it works with Astro transitions
+  document.addEventListener('astro:after-swap', highlightFromHash);
 </script>
 
 <style>
   .active-index-item {
     color: var(--accent-amber) !important;
     background-color: rgba(255, 191, 0, 0.1);
-    padding-left: 0.5rem;
+    padding: 0.2rem 0.5rem;
     border-left: 2px solid var(--accent-amber);
+    border-radius: 0 4px 4px 0;
   }
-  /* ... rest of styles ... */
 
   .contents-container {
     max-width: 800px;
@@ -152,8 +162,9 @@ const modulesWithTopics = await Promise.all(
     text-decoration: none;
     font-family: var(--font-mono);
     font-size: 0.9rem;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
     line-height: 1.4;
+    display: inline-block;
   }
 
   .topic-link:hover, .topic-link:active {
