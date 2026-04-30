@@ -50,21 +50,28 @@ const modulesWithHeadings = await Promise.all(
 
 <script>
   /**
-   * ACTIVE TOPIC HIGHLIGHTER
+   * ROBUST ACTIVE TOPIC HIGHLIGHTER
    */
   function initSidebarHighlight() {
     const currentPath = window.location.pathname;
     const sidebar = document.querySelector('.sidebar');
     if (!sidebar) return;
 
-    // 1. Highlight Active Module based on URL
+    // Helper to normalize paths for comparison
+    const normalize = (path) => path.replace(/\/$/, "");
+    const normalizedCurrent = normalize(currentPath);
+
+    // 1. Highlight Active Module
     const moduleLinks = document.querySelectorAll('.nav-link');
     moduleLinks.forEach(link => {
       const href = link.getAttribute('href');
-      if (href && currentPath.includes(href)) {
-        link.classList.add('active-module');
-      } else {
-        link.classList.remove('active-module');
+      if (href) {
+        const normalizedHref = normalize(href.split('#')[0]);
+        if (normalizedCurrent === normalizedHref) {
+          link.classList.add('active-module');
+        } else {
+          link.classList.remove('active-module');
+        }
       }
     });
 
@@ -76,27 +83,33 @@ const modulesWithHeadings = await Promise.all(
 
     const observerOptions = {
       root: null,
-      rootMargin: '-10% 0px -70% 0px', // Trigger when topic is in top 30% of screen
-      threshold: 0
+      rootMargin: '-100px 0px -60% 0px',
+      threshold: [0, 1]
     };
+
+    let activeId = "";
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          const id = entry.target.id;
-          topicLinks.forEach(link => {
-            const href = link.getAttribute('href');
-            if (href && href.endsWith(`#${id}`)) {
-              link.classList.add('active-topic');
-              // Ensure sidebar scrolls to keep active link visible
-              link.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            } else {
-              link.classList.remove('active-topic');
-            }
-          });
+          activeId = entry.target.id;
+          updateHighlight();
         }
       });
     }, observerOptions);
+
+    function updateHighlight() {
+      if (!activeId) return;
+      topicLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href && href.includes(`#${activeId}`)) {
+          link.classList.add('active-topic');
+          // Optional: sidebar.scrollTo(...) if needed
+        } else {
+          link.classList.remove('active-topic');
+        }
+      });
+    }
 
     topics.forEach(t => observer.observe(t));
   }
