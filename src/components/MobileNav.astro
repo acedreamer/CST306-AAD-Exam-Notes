@@ -1,75 +1,107 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 
 const allModules = await getCollection('modules');
 const sortedModules = allModules.sort((a, b) => a.data.order - b.data.order);
 
-// Flatten the hierarchy into a linear sequence of topics
-const navigationSequence = [];
-navigationSequence.push({ label: 'HOME', url: `${import.meta.env.BASE_URL}/` });
-navigationSequence.push({ label: 'CONTENTS', url: `${import.meta.env.BASE_URL}/contents` });
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const currentPath = Astro.url.pathname.replace(/\/$/, "");
 
-for (const module of sortedModules) {
-  const rendered = await render(module);
-  const topics = rendered.headings.filter((h) => h.depth === 2);
-  
-  // Add each topic as a navigation point
-  for (const topic of topics) {
-    navigationSequence.push({
-      label: topic.text,
-      url: `${import.meta.env.BASE_URL}/modules/${module.id}#${topic.slug}`
-    });
-  }
-}
+// Define the global sequence of pages
+const pageSequence = [
+  { id: 'home', url: base || "/" },
+  { id: 'contents', url: `${base}/contents` },
+  ...sortedModules.map(m => ({ id: m.id, url: `${base}/modules/${m.id}` }))
+];
 
-const currentPath = Astro.url.pathname;
-const currentHash = Astro.url.hash;
-const currentFullUrl = currentPath + currentHash;
+const currentIndex = pageSequence.findIndex(p => p.url === currentPath);
+const prevPage = currentIndex > 0 ? pageSequence[currentIndex - 1] : null;
+const nextPage = currentIndex < pageSequence.length - 1 ? pageSequence[currentIndex + 1] : null;
 
-// Logic to find current index in the sequence
-const currentIndex = navigationSequence.findIndex(item => {
-  const itemUrl = item.url;
-  // Exact match for path+hash
-  if (itemUrl === currentFullUrl) return true;
-  // Fallback match for path only (if no hash)
-  if (!currentHash && itemUrl.split('#')[0] === currentPath) return true;
-  return false;
-});
-
-const prevItem = currentIndex > 0 ? navigationSequence[currentIndex - 1] : null;
-const nextItem = currentIndex < navigationSequence.length - 1 ? navigationSequence[currentIndex + 1] : null;
-
-// Determine if we are on the contents page to style the Index button
-const isContentsPage = currentPath.endsWith('/contents') || currentPath.endsWith('/contents/');
+const isContentsPage = currentPath.endsWith('/contents');
 ---
 
-<nav class="mobile-nav">
+<nav class="mobile-nav" data-current-index={currentIndex}>
   <div class="nav-container">
-    {prevItem ? (
-      <a href={prevItem.url} class="nav-btn">
-        <span class="btn-text">[PREV]</span>
-      </a>
-    ) : (
-      <div class="nav-btn disabled">
-        <span class="btn-text">[PREV]</span>
-      </div>
-    )}
+    <a href={prevPage?.url} class={`nav-btn ${!prevPage ? 'disabled' : ''}`} id="mobile-prev">
+      <span class="btn-text">[PREV]</span>
+    </a>
     
-    <a href={`${import.meta.env.BASE_URL}/contents`} class={`nav-btn index-btn ${isContentsPage ? 'active' : ''}`}>
+    <a href={`${base}/contents`} class={`nav-btn index-btn ${isContentsPage ? 'active' : ''}`}>
       <span class="btn-text">[INDEX]</span>
     </a>
 
-    {nextItem ? (
-      <a href={nextItem.url} class="nav-btn">
-        <span class="btn-text">[NEXT]</span>
-      </a>
-    ) : (
-      <div class="nav-btn disabled">
-        <span class="btn-text">[NEXT]</span>
-      </div>
-    )}
+    <a href={nextPage?.url} class={`nav-btn ${!nextPage ? 'disabled' : ''}`} id="mobile-next">
+      <span class="btn-text">[NEXT]</span>
+    </a>
   </div>
 </nav>
+
+<script>
+  /**
+   * INTERACTIVE MOBILE NAVIGATION ENGINE
+   * This script tracks the current scroll position and updates the 
+   * [NEXT] and [PREV] buttons to move granularly through topics.
+   */
+  
+  function initNav() {
+    const nextBtn = document.getElementById('mobile-next') as HTMLAnchorElement;
+    const prevBtn = document.getElementById('mobile-prev') as HTMLAnchorElement;
+    if (!nextBtn || !prevBtn) return;
+
+    // Get all topic headers on the current page
+    const topics = Array.from(document.querySelectorAll('.prose h2[id]'));
+    if (topics.length === 0) return;
+
+    const topicIds = topics.map(t => t.id);
+    const baseUrl = window.location.pathname;
+
+    function updateButtons() {
+      // Find which topic is currently in view
+      let currentTopicIndex = -1;
+      
+      // We look for the first topic that is near the top of the viewport
+      for (let i = 0; i < topics.length; i++) {
+        const rect = topics[i].getBoundingClientRect();
+        if (rect.top <= 150) { // Threshold for being "at the top"
+          currentTopicIndex = i;
+        }
+      }
+
+      // 1. Update NEXT Button
+      if (currentTopicIndex < topics.length - 1) {
+        // There is a next topic on this same page
+        const nextTopicId = topicIds[currentTopicIndex + 1];
+        nextBtn.href = `${baseUrl}#${nextTopicId}`;
+      } else {
+        // We are at the last topic, NEXT goes to the next Module (handled by server-side default)
+      }
+
+      // 2. Update PREV Button
+      if (currentTopicIndex > 0) {
+        // There is a previous topic on this same page
+        const prevTopicId = topicIds[currentTopicIndex - 1];
+        prevBtn.href = `${baseUrl}#${prevTopicId}`;
+        prevBtn.classList.remove('disabled');
+      } else if (currentTopicIndex === 0) {
+        // We are at the first topic, PREV goes to Contents/Home (handled by server-side default)
+      }
+    }
+
+    // Listen for scroll events to update button targets
+    window.addEventListener('scroll', () => {
+      // Use requestAnimationFrame for performance
+      window.requestAnimationFrame(updateButtons);
+    }, { passive: true });
+
+    // Initial check
+    updateButtons();
+  }
+
+  // Run on load and on Astro page transitions
+  initNav();
+  document.addEventListener('astro:after-swap', initNav);
+</script>
 
 <style>
   .mobile-nav {
@@ -122,7 +154,7 @@ const isContentsPage = currentPath.endsWith('/contents') || currentPath.endsWith
 
   .nav-btn.disabled {
     opacity: 0.3;
-    cursor: not-allowed;
+    pointer-events: none;
     border-color: var(--text-muted);
     color: var(--text-muted);
     box-shadow: none;
