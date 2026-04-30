@@ -1,4 +1,4 @@
-# CST306-AAD-Exam-Notes: Algorithm Study OS (Mechanical Edition)
+# CST306-AAD-Exam-Notes
 
 A high-performance, professional-grade documentation website for **Algorithm Analysis & Design (CST306)**. Built specifically for students appearing for university exams (KTU), this "Study OS" provides a structured, deep-dive into complex algorithms with a focus on quick recall and rigorous theoretical accuracy.
 
