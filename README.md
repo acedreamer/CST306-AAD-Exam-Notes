@@ -3,7 +3,7 @@
 A high-performance, professional-grade documentation website for **Algorithm Analysis & Design (CST306)**. Built specifically for students appearing for university exams (KTU), this "Study OS" provides a structured, deep-dive into complex algorithms with a focus on quick recall and rigorous theoretical accuracy.
 
 ## 🚀 Live Demo
-**[View the Study OS on GitHub Pages]([https://acedreamer.github.CST306-AAD-Exam-Notes/](https://acedreamer.github.io/CST306-AAD-Exam-Notes/])**
+**[View the Study OS on GitHub Pages](https://acedreamer.github.io/CST306-AAD-Exam-Notes/)**
 
 ## 🛠️ The 4-Pillar Study Method
 Every topic in this repository is broken down into four essential sections to ensure maximum retention:
