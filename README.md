@@ -1,43 +1,35 @@
-# Astro Starter Kit: Minimal
+# CST306-AAD-Exam-Notes: Algorithm Study OS (Mechanical Edition)
 
-```sh
-npm create astro@latest -- --template minimal
-```
+A high-performance, professional-grade documentation website for **Algorithm Analysis & Design (CST306)**. Built specifically for students appearing for university exams (KTU), this "Study OS" provides a structured, deep-dive into complex algorithms with a focus on quick recall and rigorous theoretical accuracy.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## 🚀 Live Demo
+**[View the Study OS on GitHub Pages](https://acedreamer.github.CST306-AAD-Exam-Notes/)**
 
-## 🚀 Project Structure
+## 🛠️ The 4-Pillar Study Method
+Every topic in this repository is broken down into four essential sections to ensure maximum retention:
+1.  **LOG :: CONCEPT:** Intuitive analogies to anchor the core idea without jargon.
+2.  **RIGOROUS THEORY:** Formal textbook definitions, algorithms, and properties.
+3.  **STEP-BY-STEP APPLICATION:** Full numerical walkthroughs and trace tables.
+4.  **COMMAND PROTOCOL:** Strategic exam-writing tips, mark distribution, and common pitfalls (PYQ based).
 
-Inside of your Astro project, you'll see the following folders and files:
+## 📂 Modules Covered
+- **Module 1:** Algorithm Analysis, Asymptotic Notations, and Recurrences.
+- **Module 2:** Advanced Data Structures (AVL Trees, Disjoint Sets) and Graph Traversals.
+- **Module 3:** Greedy Strategy (MST, Dijkstra, Knapsack) and Divide & Conquer (Merge Sort).
+- **Module 4:** Dynamic Programming (Matrix Chain, Floyd-Warshall), Backtracking (N-Queens), and Branch & Bound (TSP).
+- **Module 5:** Complexity Theory (P, NP, NP-Complete) and Randomized/Approximation Algorithms.
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## 💻 Technical Stack
+- **Framework:** [Astro](https://astro.build/) (Static Site Generation)
+- **Styling:** Vanilla CSS with OKLCH colors & CRT Overlay effects.
+- **Math:** KaTeX for high-performance mathematical rendering.
+- **Deployment:** GitHub Pages.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## 🏗️ Local Development
+To run this project locally:
+1.  Clone the repo: `git clone https://github.com/acedreamer/CST306-AAD-Exam-Notes.git`
+2.  Install dependencies: `npm install`
+3.  Start dev server: `npm run dev`
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+---
+*Created with focus and precision for the CS student community.*
