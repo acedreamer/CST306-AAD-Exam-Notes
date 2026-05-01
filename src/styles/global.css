@@ -29,6 +29,8 @@ body {
   /* subtle dot grid background */
   background-image: radial-gradient(var(--surface) 1px, transparent 0);
   background-size: 24px 24px;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 .crt-overlay {
@@ -48,6 +50,8 @@ body {
   color: var(--text-primary);
   font-size: 1.1rem;
   line-height: 1.7;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Custom Scrollbar */
